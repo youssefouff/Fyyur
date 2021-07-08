@@ -45,8 +45,8 @@ class Venue(db.Model):
     image_link = db.Column(db.String(500), nullable=False)
     facebook_link = db.Column(db.String(200))
     genres = db.Column("genres",db.ARRAY(db.String()), nullable=False)
-    website = db.Column(db.String(200))
-    looking_for_talent = db.Column(db.Boolean, default=True)
+    website_link = db.Column(db.String(200))
+    seeking_talent = db.Column(db.Boolean, default=True)
     seeking_description = db.Column(db.String(300))
     shows = db.relationship('Show', backref='venue', lazy=True)
 
@@ -66,8 +66,8 @@ class Artist(db.Model):
     genres = db.Column(db.String(120))
     image_link = db.Column(db.String(500))
     facebook_link = db.Column(db.String(120))
-    looking_for_venue = db.Column(db.Boolean, default=True)
-    seeking_description_artist=db.Column(db.String(300))
+    seeking_venue = db.Column(db.Boolean, default=True)
+    seeking_description=db.Column(db.String(300))
     shows = db.relationship('Show', backref='artist', lazy=True)
     
     def __repr__(self):
@@ -199,9 +199,9 @@ def show_venue(venue_id):
     "city": venue.city,
     "state": venue.state,
     "phone": venue.phone,
-    "website": venue.website,
+    "website_link": venue.website_link,
     "facebook_link": venue.facebook_link,
-    "looking_for_talent": venue.looking_for_talent,
+    "seeking_talent": venue.seeking_talent,
     "seeking_description": venue.seeking_description,
     "image_link": venue.image_link,
     "past_shows": past_shows,
@@ -222,24 +222,25 @@ def create_venue_form():
 
 @app.route('/venues/create', methods=['POST'])
 def create_venue_submission():
-  form = VenueForm(request.form)
+  
   try:
+    form = VenueForm()
     venue = Venue(
       name=form.name.data,
       city=form.city.data,
       state=form.state.data,
       address=form.address.data,
       phone=form.phone.data,
+      genres=form.genres.data,
       image_link=form.image_link.data,
       facebook_link=form.facebook_link.data,
-      looking_for_talent=form.looking_for_talent,
-      seeking_description=form.seeking_description.data,
-      genres=form.genres.data,
-      website=form.website.data
+      website_link=form.website_link.data,
+      seeking_talent=form.seeking_talent,
+      seeking_description=form.seeking_description.data
     )
     db.session.add(venue)
     db.session.commit()
-    flash('Venue ' + form['name'] + ' was successfully listed!')
+    flash('Venue ' + request.form['name'] + ' was successfully listed!')
   except:
     db.session.rollback()
     flash('An error occurred. Venue '+ request.form['name'] + ' could not be listed')
@@ -327,8 +328,8 @@ def show_artist(artist_id):
     "state": artist.state,
     "phone": artist.phone,
     "facebook_link": artist.facebook_link,
-    "looking_for_venue": artist.looking_for_venue,
-    "seeking_description": artist.seeking_description_venue,
+    "seeking_venue": artist.seeking_venue,
+    "seeking_description": artist.seeking_description,
     "image_link": artist.image_link,
     "past_shows": past_shows,
     "upcoming_shows": upcoming_shows,
@@ -352,8 +353,8 @@ def edit_artist(artist_id):
     "state": artist.state,
     "phone": artist.phone,
     "facebook_link": artist.facebook_link,
-    "looking_for_venue": artist.looking_for_venue,
-    "seeking_description": artist.seeking_description_venue,
+    "seeking_venue": artist.seeking_venue,
+    "seeking_description": artist.seeking_description,
     "image_link": artist.image_link
   }
   # TODO: populate form with fields from artist with ID <artist_id>
@@ -374,8 +375,8 @@ def edit_artist_submission(artist_id):
     artist.genres = form.genres.data
     artist.image_link = form.image_link.data
     artist.facebook_link = form.facebook_link.data
-    artist.looking_for_venue = form.looking_for_venue.data
-    artist.seeking_description_venue = form.seeking_description_venue.data
+    artist.seeking_venue = form.seeking_venue.data
+    artist.seeking_description = form.seeking_description.data
     
     db.session.commit()
     flash('The Artist ' + request.form['name'] + ' has been successfully updated!')
@@ -398,9 +399,9 @@ def edit_venue(venue_id):
     "city": venue.city,
     "state": venue.state,
     "phone": venue.phone,
-    "website": venue.website,
+    "website_link": venue.website_link,
     "facebook_link": venue.facebook_link,
-    "looking_for_talent": venue.looking_for_talent,
+    "seeking_talent": venue.seeking__talent,
     "seeking_description": venue.seeking_description,
     "image_link": venue.image_link,
   }
@@ -436,8 +437,8 @@ def create_artist_submission():
       phone=form.phone.data,
       image_link=form.image_link.data,
       facebook_link=form.facebook_link.data,
-      looking_for_venue=form.looking_for_venue.data,
-      seeking_description_venue=form.seeking_description_venue.data,
+      seeking_venue=form.seeking_venue.data,
+      seeking_description=form.seeking_description.data,
       genres=form.genres.data
     )
     db.session.add(artist)
